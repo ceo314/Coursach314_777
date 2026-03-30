@@ -1,16 +1,4 @@
 package Steg007;
-/*
- * Курсовой проект: Разработка приложения с графическим интерфейсом для криптографического шифрования
- *                  и стеганографического встраивания сообщений в цифровые изображения
- * Язык: Java
- * Автор: [Твоё имя]
- * Дата: 2025
- *
- * Программа позволяет:
- * - Зашифровать секретное сообщение с помощью AES-128 и спрятать его в изображение (метод LSB)
- * - Извлечь из изображения зашифрованные данные и расшифровать их при правильном пароле
- * Используются только стандартные библиотеки Java.
- */
 
 import javax.crypto.Cipher;                     // для шифрования/дешифрования
 import javax.crypto.spec.SecretKeySpec;        // для представления ключа
@@ -108,10 +96,7 @@ public class Main extends JFrame {
         }
     }
 
-    /**
-     * Генерация ключа AES-128 из пароля.
-     * Берём SHA-256 от пароля и берём первые 16 байт (128 бит).
-     */
+    //Генерация ключа AES-128 из пароля. Берём SHA-256 от пароля и берём первые 16 байт (128 бит).
     private SecretKeySpec deriveKey(String password) throws NoSuchAlgorithmException {
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
         byte[] keyBytes = sha.digest(password.getBytes(StandardCharsets.UTF_8));
@@ -145,10 +130,8 @@ public class Main extends JFrame {
     /**
      * Встраивание зашифрованных данных в изображение (LSB).
      * Алгоритм:
-     * - Сначала сохраняем длину зашифрованных данных в первых 4 байтах.
-     * - Затем побайтово записываем сами данные.
-     * - Каждый байт разбивается на 8 бит, каждый бит записывается в младший бит
-     *   одного из цветовых каналов (R, G, B) последовательно.
+     * - Сохраняем длину зашифрованных данных в первых 4 байтах, Побайтово записываем сами данные,
+     * - Каждый байт разбивается на 8 бит, каждый бит записывается в младший бит одного из цветовых каналов (R, G, B) последовательно.
      */
     private void hideMessage(ActionEvent e) {
         String imagePath = imagePathField.getText();
@@ -228,7 +211,6 @@ public class Main extends JFrame {
                             blue = (blue & 0xFE) | bit;
                             break;
                     }
-
                     // Собираем новый цвет и устанавливаем в изображение
                     Color newColor = new Color(red, green, blue);
                     img.setRGB(x, y, newColor.getRGB());
@@ -237,24 +219,21 @@ public class Main extends JFrame {
                 }
                 i++;
             }
-
             // 6. Сохраняем изменённое изображение в формате PNG
             String outputPath = imagePath.replaceFirst("(\\.[^.]+)$", "_secret$1");
             ImageIO.write(img, "png", new File(outputPath));
             JOptionPane.showMessageDialog(this,
                     "Сообщение успешно спрятано!\nФайл сохранён: " + outputPath);
-
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Ошибка при сокрытии: " + ex.getMessage());
         }
     }
-
     /**
      * Извлечение зашифрованных данных из изображения и их расшифровка.
      * Алгоритм:
-     * - Сначала извлекаем первые 4 байта, чтобы узнать длину зашифрованного сообщения.
-     * - Затем читаем ровно столько байтов, сколько указано в длине.
+     * - Извлекаем первые 4 байта, чтобы узнать длину зашифрованного сообщения.
+     * - Читаем ровно столько байтов, сколько указано в длине.
      * - Расшифровываем и выводим результат.
      */
     private void extractMessage(ActionEvent e) {
@@ -345,7 +324,6 @@ public class Main extends JFrame {
                         bit = color.getBlue() & 1;
                         break;
                 }
-
                 int byteIndex = i / 8;
                 int bitInByte = 7 - (i % 8);
                 if (bit == 1) {
@@ -357,13 +335,11 @@ public class Main extends JFrame {
             String decrypted = decrypt(encrypted, password);
             messageArea.setText(decrypted);
             JOptionPane.showMessageDialog(this, "Сообщение успешно извлечено!");
-
         } catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Ошибка при извлечении: " + ex.getMessage());
         }
     }
-
     // Точка входа в программу
     public static void main(String[] args) {
         // Запускаем интерфейс в потоке обработки событий (правило Swing)
